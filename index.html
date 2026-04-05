@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartoon Cuisine</title>
+
+    <!-- Подключение стилей -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Дополнительные стили для анимации текста -->
+    <style>
+        #typing-text {
+            border-right: 3px solid white;
+            padding-right: 5px;
+            animation: blink 0.8s infinite;
+            font-weight: bold;
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Шапка сайта -->
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo">🍽️ Cartoon Cuisine</a>
+
+            <nav class="nav-links">
+                <a href="index.html">Главная</a>
+                <a href="catalog.html">Каталог</a>
+                <a href="add.html">Добавить</a>
+            </nav>
+
+            <div class="profile-area">
+                <button type="button" class="profile-btn profile-btn-loading" id="profile-btn">⏳ Загрузка...</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-overlay" id="auth-modal" style="display:none;">
+        <div class="auth-modal-window">
+            <button type="button" class="modal-close-btn" id="auth-modal-close">✕</button>
+
+            <div id="auth-guest-view">
+                <h2>Вход / Регистрация</h2>
+
+                <div class="auth-form-group">
+                    <label for="modal-auth-email">Email</label>
+                    <input type="email" id="modal-auth-email" placeholder="Введите email">
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="modal-auth-password">Пароль</label>
+                    <input type="password" id="modal-auth-password" placeholder="Введите пароль">
+                </div>
+
+                <div class="auth-modal-actions">
+                    <button type="button" id="modal-login-btn" class="auth-main-btn">Войти</button>
+                    <button type="button" id="modal-signup-btn" class="auth-secondary-btn">Регистрация</button>
+                </div>
+            </div>
+
+            <div id="auth-user-view" style="display:none;">
+                <h2>Личный кабинет</h2>
+                <p class="profile-email-label">Вы вошли как:</p>
+                <p id="modal-user-email" class="profile-email-value"></p>
+
+                <div class="auth-modal-actions">
+                    <button type="button" id="modal-logout-btn" class="auth-main-btn">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Содержимое сайта -->
+    <div class="container">
+        <main style="text-align: center; padding-top: 40px;">
+            <div class="welcome-banner">
+                <h1>Добро пожаловать в Cartoon Cuisine!</h1>
+
+                <!-- Анимированный текст -->
+                <p class="typing-wrapper">
+                    <span>Еда из твоих любимых <span id="typing-text"></span>
+                </p> <br>
+
+                <a href="catalog.html" class="btn-main">Перейти к рецептам →</a>
+            </div>
+
+            <div class="categories-row">
+                <!-- Ссылка на игры-->
+                <a href="catalog.html?cat=games" class="cat-card">
+                    <span class="cat-icon">🎮</span>
+                    <h3>Игры</h3>
+                </a>
+
+                <!-- Ссылнка на фильмы-->
+                <a href="catalog.html?cat=movies" class="cat-card">
+                    <span class="cat-icon">🎬</span>
+                    <h3>Фильмы</h3>
+                </a>
+
+                <!-- Ссылка на мультфильмы-->
+                <a href="catalog.html?cat=cartoons" class="cat-card">
+                    <span class="cat-icon">📺</span>
+                    <h3>Мультфильмы</h3>
+                </a>
+
+                <!-- Ссылка на сериалы-->
+                <a href="catalog.html?cat=series" class="cat-card">
+                    <span class="cat-icon">🍿</span>
+                    <h3>Сериалы</h3>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Подвал сайта -->
+    <footer>
+        <div class="footer-partners">
+            <div class="footer-partners-title">Наши партнёры</div>
+
+            <div class="footer-partners-links">
+                <a href="https://eda.yandex.ru/" target="_blank" rel="noopener noreferrer">Яндекс Еда</a>
+                <a href="https://samokat.ru/" target="_blank" rel="noopener noreferrer">Самокат</a>
+                <a href="https://myspar.ru/" target="_blank" rel="noopener noreferrer">Spar</a>
+            </div>
+        </div>
+
+        <p>© 2025 Cartoon Cuisine</p>
+    </footer>
+
+    <!-- Скрипт для анимации текста -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textElement = document.getElementById('typing-text');
+            const words = ['мультфильмов.', 'фильмов.', 'игр.', 'сериалов.'];
+
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typeEffect() {
+                // Выбираем текущее слово
+                const currentWord = words[wordIndex % words.length]
+
+                // Обновляем текст на экране
+                textElement.textContent = currentWord.substring(0, charIndex)
+
+                //Скорость печати
+
+                let typeSpeed = 150
+
+                if (isDeleting) {
+                    typeSpeed = 70; // Удаляем быстрее
+                    charIndex--;    // Уменьшаем счетчик
+                } else {
+                    charIndex++;    // Увеличиваем счетчик
+                }
+
+                // Если слово напечатано полностью
+                if (!isDeleting && charIndex > currentWord.length) {
+                    isDeleting = true; // Начинаем удалять
+                    typeSpeed = 2000; // Пауза в конце слова
+                    charIndex = currentWord.length;
+                }
+                
+                // Если слово удалено полностью
+                else if (isDeleting && charIndex < 0) {
+                    isDeleting = false; // Начинаем печатать новое
+                    wordIndex++; // Переходим к следующему слову
+                    typeSpeed = 500; // Пауза перед началом нового слова
+                    charIndex = 0;
+                }
+
+                // Запускаем снова
+                setTimeout(typeEffect, typeSpeed);
+            }
+            typeEffect();
+        });
+        
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

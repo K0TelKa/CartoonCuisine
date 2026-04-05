@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✏️ Редактировать рецепт</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo">🍽️ Cartoon Cuisine</a>
+
+            <nav class="nav-links">
+                <a href="index.html">Главная</a>
+                <a href="catalog.html">Каталог</a>
+                <a href="add.html">Добавить</a>
+            </nav>
+
+            <div class="profile-area">
+                <button type="button" class="profile-btn profile-btn-loading" id="profile-btn">⏳ Загрузка...</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-overlay" id="auth-modal" style="display:none;">
+        <div class="auth-modal-window">
+            <button type="button" class="modal-close-btn" id="auth-modal-close">✕</button>
+
+            <div id="auth-guest-view">
+                <h2>Вход / Регистрация</h2>
+
+                <div class="auth-form-group">
+                    <label for="modal-auth-email">Email</label>
+                    <input type="email" id="modal-auth-email" placeholder="Введите email">
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="modal-auth-password">Пароль</label>
+                    <input type="password" id="modal-auth-password" placeholder="Введите пароль">
+                </div>
+
+                <div class="auth-modal-actions">
+                    <button type="button" id="modal-login-btn" class="auth-main-btn">Войти</button>
+                    <button type="button" id="modal-signup-btn" class="auth-secondary-btn">Регистрация</button>
+                </div>
+            </div>
+
+            <div id="auth-user-view" style="display:none;">
+                <h2>Личный кабинет</h2>
+                <p class="profile-email-label">Вы вошли как:</p>
+                <p id="modal-user-email" class="profile-email-value"></p>
+
+                <div class="auth-modal-actions">
+                    <button type="button" id="modal-logout-btn" class="auth-main-btn">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контейнер -->
+    <div class="container">
+        
+        <!-- Сайдбар -->
+        <aside>
+            <div class="sidebar-title">Категории</div>
+
+            <a href="catalog.html" class="sidebar-btn-all">
+                📋 Все рецепты
+            </a>
+
+            <details>
+                <summary>🎮 Игры</summary>
+                <div class="sub-menu" id="menu-games"></div>
+            </details>
+
+            <details>
+                <summary>🎬 Фильмы</summary>
+                <div class="sub-menu" id="menu-movies"></div>
+            </details>
+
+            <details>
+                <summary>📺 Мультфильмы</summary>
+                <div class="sub-menu" id="menu-cartoons"></div>
+            </details>
+
+            <details>
+                <summary>🍿 Сериалы</summary>
+                <div class="sub-menu" id="menu-series"></div>
+            </details>
+        </aside>
+
+        <!-- Форма добавления -->
+        <main>
+            <h1 class="page-title">✏️ Редактировать рецепт</h1>
+
+            <div id="loading-message" class="loading-message">
+                ⏳ Загружаем данные рецепта...
+            </div>
+            
+            <form id="recipe-form" class="recipe-form" style="display: none;">
+                <div class="form-section">
+                    <h2>Информация</h2>
+
+                    <div class="form-group">
+                        <label>Название блюда</label>
+                        <input type="text" id="title" required placeholder="Например: Крабсбургер">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Категория</label>
+                            <select id="category" required>
+                                <option value="">Выбрать...</option>
+                                <option value="games">🎮 Игры</option>
+                                <option value="movies">🎬 Фильмы</option>
+                                <option value="cartoons">📺 Мультфильмы</option>
+                                <option value="series">🍿 Сериалы</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Откуда (Игра/фильм)</label>
+                            <input type="text" id="subcategory" required placeholder="Например: Губка Боб">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Тип</label>
+                            <select id="type" required>
+                                <option value="main">🍗 Горячее</option>
+                                <option value="soup">🍲 Суп</option>
+                                <option value="salad">🥗 Салат</option>
+                                <option value="pasta">🍝 Паста</option>
+                                <option value="baking">🥐 Выпечка</option>
+                                <option value="fastfood">🍔 Фастфуд</option>
+                                <option value="breakfast">🍳 Завтрак</option>
+                                <option value="dessert">🍰 Десерт</option>
+                                <option value="drink">🥤 Напиток</option>
+                                <option value="snack">🥪 Закуска</option>
+                                <option value="sauce">🍡 Соус</option>                                
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Сложность</label>
+                            <select id="difficulty" required>
+                                <option value="easy">🟢 Легко</option>
+                                <option value="medium">🟡 Средне</option>
+                                <option value="hard">🔴 Сложно</option>                                
+                            </select> 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Картинка</h2>
+
+                    <div class="form-group">
+                        <label>Ссылка на изображение</label>
+                        <input type="url" id="image" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Настройка отображения на карточке</label>
+
+                        <div class="image-preview image-preview-cropper" id="image-preview">
+                            <img id="crop-image" src="" alt="" style="display:none;">
+                            <div class="image-preview-text" id="image-preview-text">Предпросмотр</div>
+
+                            <div class="crop-frame">
+                                <div class="crop-frame-border"></div>
+                            </div>
+                        </div>
+
+                        <div class="crop-hint">Перетаскивай изображение мышкой, колесом меняй масштаб</div>
+                    </div>
+
+                    <input type="hidden" id="image-scale" value="1">
+                    <input type="hidden" id="image-focus-x" value="50">
+                    <input type="hidden" id="image-focus-y" value="50">
+                </div>
+
+                <div class="form-section">
+                    <h2>Описание</h2>
+                    <div class="form-group">
+                        <textarea id="desc" rows="3" placeholder="Пару слов о блюде..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Ингредиенты</h2>
+                    <div id="ingredients-list"></div>
+                    <button type="button" id="add-ingr-btn" class="btn-add">+ Добавить ингредиент</button>
+                </div>
+
+                <div class="form-section">
+                    <h2>Приготовление</h2>
+                    <div id="steps-list"></div>
+                    <button type="button" id="add-step-btn" class="btn-add">+ Добавить шаг</button>
+                </div>
+
+                <button type="submit" class="btn-submit">✅ Изменить</button>
+            </form>
+        </main>
+
+    </div>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="footer-partners">
+            <div class="footer-partners-title">Наши партнёры</div>
+
+            <div class="footer-partners-links">
+                <a href="https://eda.yandex.ru/" target="_blank" rel="noopener noreferrer">Яндекс Еда</a>
+                <a href="https://samokat.ru/" target="_blank" rel="noopener noreferrer">Самокат</a>
+                <a href="https://myspar.ru/" target="_blank" rel="noopener noreferrer">Spar</a>
+            </div>
+        </div>
+
+        <p>© 2025 Cartoon Cuisine</p>
+    </footer>
+
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/data.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/edit-recipe.js"></script>
+    <script src="js/auth.js"></script>
+
+</body>
+</html>

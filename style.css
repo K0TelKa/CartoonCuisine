@@ -1,0 +1,1178 @@
+/* =========================================
+   1. БАЗОВЫЕ НАСТРОЙКИ
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    gap: 30px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+main {
+    flex: 1;
+    min-width: 0;
+}
+
+/* =========================================
+   2. ШАПКА
+   ========================================= */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #e74c3c;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    margin-left: auto;
+}
+
+.nav-links a {
+    color: #bdc3c7;
+    font-weight: 500;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: white;
+}
+
+.nav-links a.active {
+    color: white;
+    border-bottom: 2px solid #e74c3c;
+}
+
+/* =========================================
+   3. ГЛАВНАЯ СТРАНИЦА
+   ========================================= */
+.welcome-banner {
+    background: linear-gradient(135deg, #2c3e50, #e74c3c);
+    color: white;
+    padding: 60px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+}
+
+.welcome-banner h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.btn-main {
+    display: inline-block;
+    background: white;
+    color: #e74c3c;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: transform 0.2s;
+}
+
+.btn-main:hover {
+    transform: scale(1.05);
+}
+
+.categories-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 80px;
+}
+
+.cat-card {
+    background: white;
+    padding: 20px;
+    width: 200px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.cat-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+/* =========================================
+   4. САЙДБАР
+   ========================================= */
+aside {
+    width: 280px;
+    flex-shrink: 0;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+aside::-webkit-scrollbar {
+    width: 6px;
+}
+
+aside::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+aside::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.sidebar-btn-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #2c3e50;
+    color: white !important;
+    padding: 16px 20px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+}
+
+.sidebar-btn-all:hover {
+    background: #34495e;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(44, 62, 80, 0.4);
+}
+
+details {
+    margin-bottom: 12px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #eee;
+    transition: 0.3s;
+}
+
+details[open] {
+    background-color: #fff;
+    border-color: #e0e0e0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+summary {
+    list-style: none;
+    padding: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #2c3e50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::after {
+    content: '+';
+    font-size: 1.2rem;
+    color: #95a5a6;
+    font-weight: normal;
+}
+
+details[open] summary::after {
+    content: '−';
+    color: #e74c3c;
+}
+
+summary:hover {
+    background-color: #fff0f0;
+    color: #e74c3c;
+    border-radius: 10px;
+}
+
+.sub-menu {
+    padding: 0 0 10px 0;
+    background-color: white;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 10px 15px 10px 20px;
+    color: #666;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.sidebar-link:hover {
+    background-color: #fcfcfc;
+    color: #e74c3c;
+    border-left-color: #e74c3c;
+    padding-left: 25px;
+}
+
+.sidebar-link-all {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.sidebar-link-empty {
+    display: block;
+    padding: 10px 15px 10px 20px;
+    color: #999;
+    font-size: 0.95rem;
+    font-style: italic;
+    text-decoration: none;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* =========================================
+   5. ПОИСК И ФИЛЬТРЫ
+   ========================================= */
+.search-box {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: 0.3s;
+    margin-bottom: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ccc" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    padding-left: 45px;
+    box-sizing: border-box;
+}
+
+.search-box:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+}
+
+.filters-panel {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-select {
+    padding: 10px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-family: inherit;
+    color: #555;
+    cursor: pointer;
+}
+
+/* =========================================
+   6. СЕТКА РЕЦЕПТОВ
+   ========================================= */
+.recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+    width: 100%;
+    padding-bottom: 50px;
+}
+
+.recipe-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s;
+}
+
+.recipe-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.card-img-placeholder {
+    position: relative;
+    height: 180px;
+    background-color: #eee;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.card-img-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-info h3 {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    line-height: 1.4;
+}
+
+.card-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.tag {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: white;
+    background-color: #e74c3c;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.meta {
+    font-size: 0.9rem;
+    color: #95a5a6;
+    margin-bottom: 15px;
+}
+
+.btn-card {
+    margin-top: auto;
+    display: block;
+    text-align: center;
+    background: #f0f2f5;
+    color: #2c3e50;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-card:hover {
+    background: #2c3e50;
+    color: white;
+}
+
+.difficulty-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.diff-easy {
+    background: #d4edda;
+    color: #155724;
+}
+
+.diff-medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.diff-hard {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* =========================================
+   7. СТРАНИЦА РЕЦЕПТА
+   ========================================= */
+.back-link {
+    display: inline-block;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.back-link:hover {
+    color: #e74c3c;
+}
+
+.recipe-full {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.recipe-header {
+    margin-bottom: 25px;
+}
+
+.recipe-header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin: 10px 0;
+}
+
+.recipe-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.recipe-meta {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.recipe-image {
+    margin-bottom: 25px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.recipe-image-crop {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background: #f3f3f3;
+}
+
+.recipe-image-crop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    height: 300px;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+}
+
+.recipe-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #555;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.recipe-section {
+    margin-bottom: 30px;
+}
+
+.recipe-section h3 {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+}
+
+.ingredients-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.steps-list {
+    padding-left: 0;
+    counter-reset: step;
+}
+
+.steps-list li {
+    list-style: none;
+    padding: 15px 0 15px 50px;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    line-height: 1.6;
+}
+
+.steps-list li:before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 15px;
+    width: 30px;
+    height: 30px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* =========================================
+   8. ПОДВАЛ
+   ========================================= */
+footer {
+    background-color: #2c3e50;
+    color: #bdc3c7;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: auto;
+}
+
+.footer-partners {
+    margin-bottom: 14px;
+}
+
+.footer-partners-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.footer-partners-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.footer-partners-links a {
+    color: #ffd9d4;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.footer-partners-links a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* =========================================
+   9. СТРАНИЦА "СКОРО"
+   ========================================= */
+.coming-soon {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.coming-soon-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
+
+.coming-soon h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.coming-soon p {
+    color: #888;
+    margin-bottom: 30px;
+}
+
+/* =========================================
+   10. ФОРМА ДОБАВЛЕНИЯ / РЕДАКТИРОВАНИЯ
+   ========================================= */
+.page-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.recipe-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-section h2 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100% !important;
+    padding: 10px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: none !important;
+    box-sizing: border-box !important;
+    display: block !important;
+}
+
+#desc {
+    height: 120px !important;
+    min-height: 120px !important;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.image-preview {
+    position: relative;
+    height: 420px;
+    background: #f3f4f6;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    cursor: grab;
+    user-select: none;
+}
+
+.image-preview:active {
+    cursor: grabbing;
+}
+
+.image-preview-cropper img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transform-origin: center center;
+    will-change: transform;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.image-preview-text {
+    position: relative;
+    z-index: 3;
+    color: #999;
+    pointer-events: none;
+}
+
+.crop-frame {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.crop-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+}
+
+.crop-frame-border {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 220px;
+    height: 180px;
+    transform: translate(-50%, -50%);
+    border: 2px solid #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+    background: transparent;
+}
+
+.crop-hint {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.btn-add {
+    background: #f0f2f5;
+    color: #2c3e50;
+    border: 2px dashed #ccc;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-submit {
+    background: #27ae60;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background: #219150;
+}
+
+.dynamic-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.dynamic-row input,
+.dynamic-row textarea {
+    padding: 10px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    flex: 1;
+    resize: none;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.dynamic-row textarea {
+    height: 60px;
+}
+
+.btn-remove {
+    background: #ffebeb;
+    color: #e74c3c;
+    border: none;
+    padding: 0 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-edit {
+    display: inline-block;
+    background: #f0f2f5;
+    color: #2c3e50;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.btn-edit:hover {
+    background: #e0e0e0;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.5rem;
+    color: #666;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.loading-card {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    color: #666;
+    font-size: 1.2rem;
+    grid-column: 1 / -1;
+}
+
+.loading-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   11. МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ
+   ========================================= */
+.profile-area {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.profile-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    min-width: 170px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-btn:hover {
+    background: #cf3f31;
+}
+
+.profile-btn-guest {
+    background: #6c757d;
+    color: white;
+}
+
+.profile-btn-guest:hover {
+    background: #5a6268;
+}
+
+.profile-btn-auth {
+    background: #27ae60;
+    color: white;
+}
+
+.profile-btn-auth:hover {
+    background: #219150;
+}
+
+.profile-btn-loading {
+    opacity: 0.7;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.auth-modal-window {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 16px;
+    padding: 30px 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #f3f3f3;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #555;
+    transition: 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: #e9e9e9;
+}
+
+.auth-modal-window h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.auth-form-group {
+    margin-bottom: 16px;
+}
+
+.auth-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.auth-form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.2s;
+}
+
+.auth-form-group input:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+}
+
+.auth-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.auth-main-btn,
+.auth-secondary-btn {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.auth-main-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.auth-main-btn:hover {
+    background: #cf3f31;
+}
+
+.auth-secondary-btn {
+    background: #f0f2f5;
+    color: #2c3e50;
+}
+
+.auth-secondary-btn:hover {
+    background: #e2e6ea;
+}
+
+.profile-email-label {
+    color: #777;
+    margin-bottom: 6px;
+}
+
+.profile-email-value {
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #2c3e50;
+    word-break: break-word;
+    margin-bottom: 10px;
+}
+
+.recipe-author {
+    color: #777;
+    font-size: 0.95rem;
+    margin-top: 10px;
+}
+
+/* =========================================
+   12. РЕКЛАМА В САЙДБАРЕ
+   ========================================= */
+.sidebar-ad {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #eee;
+}
+
+.sidebar-ad-label {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.sidebar-ad-slider {
+    width: 100%;
+}
+
+.sidebar-ad-link {
+    display: block;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-ad-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+}
+
+.sidebar-ad-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 1;
+    transition: opacity 0.45s ease;
+}
+
+.sidebar-ad-img.fade-out {
+    opacity: 0;
+}
+
+.sidebar-ad-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.sidebar-ad-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #d0d0d0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sidebar-ad-dot.active {
+    background: #e74c3c;
+    transform: scale(1.15);
+}

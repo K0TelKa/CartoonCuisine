@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рецепт - Cartoon Cuisine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo">🍽️ Cartoon Cuisine</a>
+
+            <nav class="nav-links">
+                <a href="index.html">Главная</a>
+                <a href="catalog.html">Каталог</a>
+                <a href="add.html">Добавить</a>
+            </nav>
+
+            <div class="profile-area">
+                <button type="button" class="profile-btn profile-btn-loading" id="profile-btn">⏳ Загрузка...</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-overlay" id="auth-modal" style="display:none;">
+        <div class="auth-modal-window">
+            <button type="button" class="modal-close-btn" id="auth-modal-close">✕</button>
+
+            <div id="auth-guest-view">
+                <h2>Вход / Регистрация</h2>
+
+                <div class="auth-form-group">
+                    <label for="modal-auth-email">Email</label>
+                    <input type="email" id="modal-auth-email" placeholder="Введите email">
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="modal-auth-password">Пароль</label>
+                    <input type="password" id="modal-auth-password" placeholder="Введите пароль">
+                </div>
+
+                <div class="auth-modal-actions">
+                    <button type="button" id="modal-login-btn" class="auth-main-btn">Войти</button>
+                    <button type="button" id="modal-signup-btn" class="auth-secondary-btn">Регистрация</button>
+                </div>
+            </div>
+
+            <div id="auth-user-view" style="display:none;">
+                <h2>Личный кабинет</h2>
+                <p class="profile-email-label">Вы вошли как:</p>
+                <p id="modal-user-email" class="profile-email-value"></p>
+
+                <div class="auth-modal-actions">
+                    <button type="button" id="modal-logout-btn" class="auth-main-btn">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контейнер -->
+    <div class="container">
+        
+        <!-- Сайдбар -->
+        <aside>
+            <div class="sidebar-title">Категории</div>
+
+            <a href="catalog.html" class="sidebar-btn-all">
+                📋 Все рецепты
+            </a>
+
+            <details>
+                <summary>🎮 Игры</summary>
+                <div class="sub-menu" id="menu-games"></div>
+            </details>
+
+            <details>
+                <summary>🎬 Фильмы</summary>
+                <div class="sub-menu" id="menu-movies"></div>
+            </details>
+
+            <details>
+                <summary>📺 Мультфильмы</summary>
+                <div class="sub-menu" id="menu-cartoons"></div>
+            </details>
+
+            <details>
+                <summary>🍿 Сериалы</summary>
+                <div class="sub-menu" id="menu-series"></div>
+            </details>
+        </aside>
+
+
+
+        <!-- Контент -->
+        <main>
+            <a href="catalog.html" class="back-link">← Вернуться в каталог</a>
+            
+            <article class="recipe-full" id="recipe-container">
+                <div class="loading-card" style="box-shadow: none;"> 
+                    <span class="loading-icon">⏳</span>
+                    Загружаем вкусный рецепт...
+                </div>
+            </article>
+        </main>
+
+    </div>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="footer-partners">
+            <div class="footer-partners-title">Наши партнёры</div>
+
+            <div class="footer-partners-links">
+                <a href="https://eda.yandex.ru/" target="_blank" rel="noopener noreferrer">Яндекс Еда</a>
+                <a href="https://samokat.ru/" target="_blank" rel="noopener noreferrer">Самокат</a>
+                <a href="https://myspar.ru/" target="_blank" rel="noopener noreferrer">Spar</a>
+            </div>
+        </div>
+
+        <p>© 2025 Cartoon Cuisine</p>
+    </footer>
+
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/data.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/recipe.js"></script>
+    <script src="js/auth.js"></script>
+
+</body>
+</html>
