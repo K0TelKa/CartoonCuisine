@@ -147,48 +147,45 @@ function drawCards(recipes) {
     grid.innerHTML = ''
 
     if (recipes.length == 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#777; padding:40px;">😔 Ничего не найдено</p>'
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#777;padding:40px;">😔 Ничего не найдено</p>'
         return
     }
 
     for (let i = 0; i < recipes.length; i++) {
         let recipe = recipes[i]
+        let imageHTML = '<span style="font-size:3rem;">🍲</span>'
 
-        let image = '🍲'
+        if (recipe.image && /^https?:\/\//.test(recipe.image.trim())) {
+            let img = recipe.image.trim()
 
-        if (recipe.image && recipe.image.trim() !== '') {
-            const img = recipe.image.trim()
-            const scale = parseFloat(recipe.image_scale || 1)
-            const focusX = parseFloat(recipe.image_focus_x || 50)
-            const focusY = parseFloat(recipe.image_focus_y || 50)
+            // focusX и focusY — это уже точка на картинке в процентах (0-100)
+            // Это напрямую object-position!
+            let opX = parseFloat(recipe.image_focus_x || 50)
+            let opY = parseFloat(recipe.image_focus_y || 50)
 
-            if (img.startsWith('<img')) {
-                image = img
-            } else if (/^https?:\/\//.test(img)) {
-                image = `
-                    <img 
-                        src="${img}" 
-                        alt=""
-                        style="
-                            width:100%;
-                            height:100%;
-                            object-fit:cover;
-                            object-position:${focusX}% ${focusY}%;
-                            transform: scale(${scale});
-                            transform-origin:${focusX}% ${focusY}%;
-                        ">
-                `
-            }
+            opX = Math.max(0, Math.min(100, opX))
+            opY = Math.max(0, Math.min(100, opY))
+
+            imageHTML = `<img
+                src="${img}"
+                alt="${recipe.title || ''}"
+                style="
+                    position:absolute;
+                    top:0; left:0;
+                    width:100%; height:100%;
+                    object-fit:cover;
+                    object-position:${opX.toFixed(1)}% ${opY.toFixed(1)}%;
+                ">`
         }
 
         let diffBadge = ''
         if (recipe.difficulty) {
-            diffBadge = '<span class="difficulty-badge diff-' + recipe.difficulty + '">' + getDifficultyName(recipe.difficulty) + '</span>'
+            diffBadge = `<span class="difficulty-badge diff-${recipe.difficulty}">${getDifficultyName(recipe.difficulty)}</span>`
         }
 
-        let cardHTML = `
+        grid.innerHTML += `
         <article class="recipe-card">
-            <div class="card-img-placeholder">${image}</div>
+            <div class="card-img-placeholder">${imageHTML}</div>
             <div class="card-info">
                 <div class="card-tags">
                     <span class="tag">${recipe.subcategory || 'Без категории'}</span>
@@ -199,8 +196,6 @@ function drawCards(recipes) {
                 <a href="recipe.html?id=${recipe.id}" class="btn-card">Открыть</a>
             </div>
         </article>`
-
-        grid.innerHTML += cardHTML
     }
 }
 

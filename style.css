@@ -3,6 +3,12 @@
    ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Nunito', sans-serif;
     margin: 0;
@@ -388,6 +394,7 @@ summary:hover {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .card-info {
@@ -529,6 +536,7 @@ summary:hover {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .no-image {
@@ -691,6 +699,10 @@ footer {
     border-bottom: 1px solid #eee;
 }
 
+.form-section:last-child {
+    border-bottom: none;
+}
+
 .form-section h2 {
     font-size: 1.2rem;
     color: #2c3e50;
@@ -706,25 +718,37 @@ footer {
     margin-bottom: 5px;
     font-weight: bold;
     font-size: 0.9rem;
+    color: #2c3e50;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    width: 100% !important;
+    width: 100%;
     padding: 10px;
     border: 2px solid #eee;
     border-radius: 8px;
     font-size: 1rem;
     font-family: inherit;
-    resize: none !important;
-    box-sizing: border-box !important;
-    display: block !important;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
 }
 
 #desc {
-    height: 120px !important;
-    min-height: 120px !important;
+    min-height: 120px;
 }
 
 .form-row {
@@ -736,88 +760,72 @@ footer {
     flex: 1;
 }
 
+/* === ПРЕВЬЮ И ОБРЕЗКА ИЗОБРАЖЕНИЯ === */
 .image-preview {
     position: relative;
-    height: 420px;
-    background: #f3f4f6;
+    width: 100%;
+    height: 300px;
+    background: #2a2a2a;
+    border: 3px solid #e74c3c;
     border-radius: 12px;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-    cursor: grab;
     user-select: none;
+    cursor: grab;
 }
 
 .image-preview:active {
     cursor: grabbing;
 }
 
-.image-preview-cropper img {
+#crop-image {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    max-width: 90%;
-    max-height: 90%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    transform-origin: center center;
-    will-change: transform;
+    display: none;
     pointer-events: none;
-    z-index: 1;
+    max-width: none;
+    max-height: none;
+    object-fit: fill;
 }
 
 .image-preview-text {
-    position: relative;
-    z-index: 3;
-    color: #999;
-    pointer-events: none;
-}
-
-.crop-frame {
     position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-}
-
-.crop-frame::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-}
-
-.crop-frame-border {
-    position: absolute;
-    left: 50%;
     top: 50%;
-    width: 220px;
-    height: 180px;
+    left: 50%;
     transform: translate(-50%, -50%);
-    border: 2px solid #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
-    background: transparent;
+    color: #9ca3af;
+    font-size: 1.1rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 2;
+    white-space: nowrap;
 }
 
 .crop-hint {
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 0.9rem;
-    color: #777;
+    color: #6b7280;
+    font-style: italic;
 }
 
+/* === КНОПКИ === */
+
 .btn-add {
-    background: #f0f2f5;
-    color: #2c3e50;
-    border: 2px dashed #ccc;
+    background: #f3f4f6;
+    color: #374151;
+    border: 2px dashed #d1d5db;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.btn-add:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+    color: #1f2937;
 }
 
 .btn-submit {
@@ -830,11 +838,21 @@ footer {
     font-weight: bold;
     border-radius: 10px;
     cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
 }
 
 .btn-submit:hover {
-    background: #219150;
+    background: #229954;
 }
+
+.btn-submit:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* === ДИНАМИЧЕСКИЕ ПОЛЯ === */
 
 .dynamic-row {
     display: flex;
@@ -849,24 +867,53 @@ footer {
     border: 2px solid #eee;
     border-radius: 8px;
     flex: 1;
-    resize: none;
     font-family: inherit;
+    font-size: 0.95rem;
     box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.dynamic-row input:focus,
+.dynamic-row textarea:focus {
+    outline: none;
+    border-color: #e74c3c;
 }
 
 .dynamic-row textarea {
-    height: 60px;
+    resize: vertical;
+    min-height: 60px;
+}
+
+.ingr-name {
+    flex: 2;
+}
+
+.ingr-amount {
+    flex: 1;
+}
+
+.step-text {
+    flex: 1;
 }
 
 .btn-remove {
-    background: #ffebeb;
-    color: #e74c3c;
+    background: #fee2e2;
+    color: #dc2626;
     border: none;
     padding: 0 15px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+    flex-shrink: 0;
 }
+
+.btn-remove:hover {
+    background: #fecaca;
+}
+
+/* === ПРОЧЕЕ === */
 
 .btn-edit {
     display: inline-block;
@@ -878,10 +925,11 @@ footer {
     font-weight: bold;
     font-size: 0.9rem;
     margin-bottom: 10px;
+    transition: background 0.2s;
 }
 
 .btn-edit:hover {
-    background: #e0e0e0;
+    background: #e0e3e7;
 }
 
 .loading-message {
@@ -909,6 +957,12 @@ footer {
     font-size: 3rem;
     display: block;
     margin-bottom: 15px;
+}
+
+.recipe-author {
+    color: #777;
+    font-size: 0.95rem;
+    margin-top: 10px;
 }
 
 /* =========================================
@@ -967,7 +1021,7 @@ footer {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -983,14 +1037,14 @@ footer {
     background: white;
     border-radius: 16px;
     padding: 30px 25px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     animation: modalFadeIn 0.2s ease;
 }
 
 @keyframes modalFadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px) scale(0.98);
+        transform: translateY(-20px) scale(0.95);
     }
     to {
         opacity: 1;
@@ -1008,13 +1062,16 @@ footer {
     height: 34px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #555;
     transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-close-btn:hover {
-    background: #e9e9e9;
+    background: #e0e0e0;
 }
 
 .auth-modal-window h2 {
@@ -1081,6 +1138,11 @@ footer {
     background: #cf3f31;
 }
 
+.auth-main-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
 .auth-secondary-btn {
     background: #f0f2f5;
     color: #2c3e50;
@@ -1090,9 +1152,15 @@ footer {
     background: #e2e6ea;
 }
 
+.auth-secondary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .profile-email-label {
     color: #777;
     margin-bottom: 6px;
+    font-size: 0.9rem;
 }
 
 .profile-email-value {
@@ -1101,12 +1169,6 @@ footer {
     color: #2c3e50;
     word-break: break-word;
     margin-bottom: 10px;
-}
-
-.recipe-author {
-    color: #777;
-    font-size: 0.95rem;
-    margin-top: 10px;
 }
 
 /* =========================================
@@ -1172,7 +1234,35 @@ footer {
     transition: 0.2s;
 }
 
+.sidebar-ad-dot:hover {
+    background: #b0b0b0;
+}
+
 .sidebar-ad-dot.active {
     background: #e74c3c;
-    transform: scale(1.15);
+    transform: scale(1.2);
+}
+
+/* =========================================
+   13. АДАПТИВНОСТЬ
+   ========================================= */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    aside {
+        width: 100%;
+        position: static;
+        max-height: none;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .recipes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 15px;
+    }
 }

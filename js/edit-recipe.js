@@ -15,13 +15,14 @@ let recipeId = null
 
 let cropState = {
     scale: 1,
-    focusX: 50,
-    focusY: 50,
+    imgX: 0,
+    imgY: 0,
     dragging: false,
     startMouseX: 0,
     startMouseY: 0,
-    startFocusX: 50,
-    startFocusY: 50
+    startImgX: 0,
+    startImgY: 0,
+    loaded: false
 }
 
 startEditPage()
@@ -55,7 +56,7 @@ async function startEditPage() {
     initCropper()
     fillForm(recipe)
 
-    imageInput.oninput = handleImageUrlChange
+    imageInput.oninput = () => handleImageUrlChange(true)
     document.getElementById('add-ingr-btn').onclick = addIngrRow
     document.getElementById('add-step-btn').onclick = addStepRow
     form.onsubmit = submitEditForm
@@ -66,48 +67,122 @@ async function startEditPage() {
 
 function initCropper() {
     previewBox.addEventListener('mousedown', function (e) {
-        if (!cropImage.src) return
+        if (!cropState.loaded) return
+        e.preventDefault()
         cropState.dragging = true
         cropState.startMouseX = e.clientX
         cropState.startMouseY = e.clientY
-        cropState.startFocusX = cropState.focusX
-        cropState.startFocusY = cropState.focusY
+        cropState.startImgX = cropState.imgX
+        cropState.startImgY = cropState.imgY
+        previewBox.style.cursor = 'grabbing'
     })
 
     window.addEventListener('mousemove', function (e) {
         if (!cropState.dragging) return
-
-        let frame = document.querySelector('.crop-frame-border')
-        if (!frame) return
-
-        let rect = frame.getBoundingClientRect()
-        let dx = e.clientX - cropState.startMouseX
-        let dy = e.clientY - cropState.startMouseY
-
-        cropState.focusX = cropState.startFocusX + (dx / rect.width) * 100
-        cropState.focusY = cropState.startFocusY + (dy / rect.height) * 100
-
-        clampCropState()
-        applyCropTransform()
+        cropState.imgX = cropState.startImgX + (e.clientX - cropState.startMouseX)
+        cropState.imgY = cropState.startImgY + (e.clientY - cropState.startMouseY)
+        clampPosition()
+        drawImage()
     })
 
     window.addEventListener('mouseup', function () {
-        cropState.dragging = false
+        if (cropState.dragging) {
+            cropState.dragging = false
+            previewBox.style.cursor = 'grab'
+        }
     })
 
     previewBox.addEventListener('wheel', function (e) {
-        if (!cropImage.src) return
+        if (!cropState.loaded) return
         e.preventDefault()
+        e.stopPropagation()
 
-        let delta = e.deltaY > 0 ? -0.1 : 0.1
-        cropState.scale += delta
+        let oldScale = cropState.scale
+        let delta = e.deltaY < 0 ? 0.1 : -0.1
+        let newScale = parseFloat((oldScale + delta).toFixed(2))
+        if (newScale < 1) newScale = 1
+        if (newScale > 10) newScale = 10
 
-        if (cropState.scale < 1) cropState.scale = 1
-        if (cropState.scale > 3) cropState.scale = 3
+        let boxW = previewBox.offsetWidth
+        let boxH = previewBox.offsetHeight
+        let cx = boxW / 2
+        let cy = boxH / 2
+        let r = newScale / oldScale
 
-        clampCropState()
-        applyCropTransform()
+        cropState.imgX = cx - (cx - cropState.imgX) * r
+        cropState.imgY = cy - (cy - cropState.imgY) * r
+        cropState.scale = newScale
+
+        clampPosition()
+        drawImage()
     }, { passive: false })
+}
+
+function getSize() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let natW = cropImage.naturalWidth
+    let natH = cropImage.naturalHeight
+    let ratio = Math.max(boxW / natW, boxH / natH)
+    return {
+        w: natW * ratio * cropState.scale,
+        h: natH * ratio * cropState.scale
+    }
+}
+
+function clampPosition() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let s = getSize()
+
+    if (s.w >= boxW) {
+        if (cropState.imgX > 0) cropState.imgX = 0
+        if (cropState.imgX < boxW - s.w) cropState.imgX = boxW - s.w
+    } else {
+        cropState.imgX = (boxW - s.w) / 2
+    }
+
+    if (s.h >= boxH) {
+        if (cropState.imgY > 0) cropState.imgY = 0
+        if (cropState.imgY < boxH - s.h) cropState.imgY = boxH - s.h
+    } else {
+        cropState.imgY = (boxH - s.h) / 2
+    }
+}
+
+function drawImage() {
+    let s = getSize()
+    cropImage.style.left = Math.round(cropState.imgX) + 'px'
+    cropImage.style.top = Math.round(cropState.imgY) + 'px'
+    cropImage.style.width = Math.round(s.w) + 'px'
+    cropImage.style.height = Math.round(s.h) + 'px'
+    saveCropState()
+}
+
+function saveCropState() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let s = getSize()
+
+    // Вычисляем какая точка картинки сейчас в центре блока
+    // Это и будет object-position при отображении
+    let centerOnImgX = (boxW / 2 - cropState.imgX) / s.w * 100
+    let centerOnImgY = (boxH / 2 - cropState.imgY) / s.h * 100
+
+    centerOnImgX = Math.max(0, Math.min(100, centerOnImgX))
+    centerOnImgY = Math.max(0, Math.min(100, centerOnImgY))
+
+    imageScaleInput.value = cropState.scale.toFixed(4)
+    imageFocusXInput.value = centerOnImgX.toFixed(4)
+    imageFocusYInput.value = centerOnImgY.toFixed(4)
+}
+
+function centerImage() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let s = getSize()
+    cropState.imgX = (boxW - s.w) / 2
+    cropState.imgY = (boxH - s.h) / 2
 }
 
 function fillForm(recipe) {
@@ -119,15 +194,16 @@ function fillForm(recipe) {
     document.getElementById('image').value = recipe.image || ''
     document.getElementById('desc').value = recipe.desc || ''
 
-    cropState.scale = parseFloat(recipe.image_scale || 1)
-    cropState.focusX = parseFloat(recipe.image_focus_x || 50)
-    cropState.focusY = parseFloat(recipe.image_focus_y || 50)
+    let savedScale = parseFloat(recipe.image_scale || 1)
+    let savedFocusX = parseFloat(recipe.image_focus_x || 0)
+    let savedFocusY = parseFloat(recipe.image_focus_y || 0)
 
-    imageScaleInput.value = cropState.scale
-    imageFocusXInput.value = cropState.focusX
-    imageFocusYInput.value = cropState.focusY
+    if (isNaN(savedScale) || savedScale < 1) savedScale = 1
+    if (savedScale > 10) savedScale = 10
+    if (isNaN(savedFocusX)) savedFocusX = 0
+    if (isNaN(savedFocusY)) savedFocusY = 0
 
-    handleImageUrlChange(false)
+    cropState.scale = savedScale
 
     ingrList.innerHTML = ''
     stepsList.innerHTML = ''
@@ -142,26 +218,55 @@ function fillForm(recipe) {
 
     if (recipe.steps) {
         let stepsArray = []
-
-        if (typeof recipe.steps === 'string' && recipe.steps.indexOf('[') == 0) {
-            stepsArray = JSON.parse(recipe.steps)
+        if (typeof recipe.steps === 'string' && recipe.steps.trim().startsWith('[')) {
+            try { stepsArray = JSON.parse(recipe.steps) }
+            catch (ex) { stepsArray = recipe.steps.split('\n') }
         } else if (typeof recipe.steps === 'string') {
             stepsArray = recipe.steps.split('\n')
         }
-
-        if (stepsArray.length) {
-            for (let i = 0; i < stepsArray.length; i++) {
-                addStepRow(stepsArray[i])
-            }
-        } else {
-            addStepRow()
+        for (let i = 0; i < stepsArray.length; i++) {
+            if (stepsArray[i].trim()) addStepRow(stepsArray[i])
         }
-    } else {
-        addStepRow()
     }
+    if (stepsList.children.length === 0) addStepRow()
+
+    let url = recipe.image ? recipe.image.trim() : ''
+    if (!url) {
+        cropImage.style.display = 'none'
+        previewText.style.display = 'block'
+        return
+    }
+
+    cropImage.onload = function () {
+        cropImage.style.display = 'block'
+        previewText.style.display = 'none'
+        previewBox.style.cursor = 'grab'
+        cropState.loaded = true
+
+        let boxW = previewBox.offsetWidth
+        let boxH = previewBox.offsetHeight
+        let s = getSize()
+
+        // Обратная формула: из focusX% восстанавливаем imgX
+        // centerOnImgX = (boxW/2 - imgX) / imgW * 100
+        // imgX = boxW/2 - centerOnImgX/100 * imgW
+        cropState.imgX = boxW / 2 - (savedFocusX / 100) * s.w
+        cropState.imgY = boxH / 2 - (savedFocusY / 100) * s.h
+
+        clampPosition()
+        drawImage()
+    }
+
+    cropImage.onerror = function () {
+        cropImage.style.display = 'none'
+        previewText.style.display = 'block'
+        previewText.innerText = 'Не удалось загрузить изображение'
+    }
+
+    cropImage.src = url
 }
 
-function handleImageUrlChange(reset = true) {
+function handleImageUrlChange(shouldReset) {
     let url = imageInput.value.trim()
 
     if (!url) {
@@ -169,60 +274,46 @@ function handleImageUrlChange(reset = true) {
         cropImage.removeAttribute('src')
         previewText.style.display = 'block'
         previewText.innerText = 'Предпросмотр'
-        if (reset) resetCrop()
+        previewBox.style.cursor = 'default'
+        cropState.loaded = false
+        imageScaleInput.value = '1'
+        imageFocusXInput.value = '0'
+        imageFocusYInput.value = '0'
         return
     }
 
     cropImage.onload = function () {
         cropImage.style.display = 'block'
         previewText.style.display = 'none'
-        if (reset) resetCrop()
-        applyCropTransform()
+        previewBox.style.cursor = 'grab'
+        cropState.loaded = true
+
+        if (shouldReset) cropState.scale = 1
+
+        centerImage()
+        clampPosition()
+        drawImage()
     }
 
     cropImage.onerror = function () {
         cropImage.style.display = 'none'
         previewText.style.display = 'block'
         previewText.innerText = 'Не удалось загрузить изображение'
-        if (reset) resetCrop()
+        previewBox.style.cursor = 'default'
+        cropState.loaded = false
     }
 
     cropImage.src = url
 }
 
-function resetCrop() {
-    cropState.scale = 1
-    cropState.focusX = 50
-    cropState.focusY = 50
-    saveCropState()
-}
-
-function clampCropState() {
-    if (cropState.focusX < 0) cropState.focusX = 0
-    if (cropState.focusX > 100) cropState.focusX = 100
-    if (cropState.focusY < 0) cropState.focusY = 0
-    if (cropState.focusY > 100) cropState.focusY = 100
-}
-
-function applyCropTransform() {
-    cropImage.style.transform =
-        'translate(-' + cropState.focusX + '%, -' + cropState.focusY + '%) scale(' + cropState.scale + ')'
-
-    saveCropState()
-}
-
-function saveCropState() {
-    imageScaleInput.value = cropState.scale
-    imageFocusXInput.value = cropState.focusX
-    imageFocusYInput.value = cropState.focusY
-}
-
 function addIngrRow(name = '', amount = '') {
     let div = document.createElement('div')
     div.className = 'dynamic-row'
+    let eName = String(name).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    let eAmt = String(amount).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
     div.innerHTML = `
-        <input type="text" class="ingr-name" value="${name}" placeholder="Название" required>
-        <input type="text" class="ingr-amount" value="${amount}" placeholder="Кол-во">
+        <input type="text" class="ingr-name" value="${eName}" placeholder="Название" required>
+        <input type="text" class="ingr-amount" value="${eAmt}" placeholder="Кол-во">
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
     `
     ingrList.appendChild(div)
@@ -231,8 +322,9 @@ function addIngrRow(name = '', amount = '') {
 function addStepRow(text = '') {
     let div = document.createElement('div')
     div.className = 'dynamic-row'
+    let eText = String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
     div.innerHTML = `
-        <textarea class="step-text" placeholder="Описание..." rows="2" required>${text}</textarea>
+        <textarea class="step-text" placeholder="Описание..." rows="2" required>${eText}</textarea>
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
     `
     stepsList.appendChild(div)
@@ -244,40 +336,31 @@ async function submitEditForm(e) {
     let ingredients = []
     let ingrRows = ingrList.querySelectorAll('.ingr-name')
     let amountRows = ingrList.querySelectorAll('.ingr-amount')
-
     for (let i = 0; i < ingrRows.length; i++) {
-        if (ingrRows[i].value) {
-            ingredients.push({
-                name: ingrRows[i].value,
-                amount: amountRows[i].value
-            })
+        if (ingrRows[i].value.trim()) {
+            ingredients.push({ name: ingrRows[i].value.trim(), amount: amountRows[i].value.trim() })
         }
     }
 
     let stepRows = stepsList.querySelectorAll('.step-text')
     let stepsArray = []
-
     for (let i = 0; i < stepRows.length; i++) {
-        if (stepRows[i].value) {
-            stepsArray.push(stepRows[i].value)
-        }
+        if (stepRows[i].value.trim()) stepsArray.push(stepRows[i].value.trim())
     }
 
-    let stepsText = stepsArray.join('\n')
-
     let updatedRecipe = {
-        title: document.getElementById('title').value,
+        title: document.getElementById('title').value.trim(),
         category: document.getElementById('category').value,
-        subcategory: document.getElementById('subcategory').value,
+        subcategory: document.getElementById('subcategory').value.trim(),
         type: document.getElementById('type').value,
         difficulty: document.getElementById('difficulty').value,
-        image: document.getElementById('image').value,
+        image: document.getElementById('image').value.trim(),
         image_scale: parseFloat(imageScaleInput.value || '1'),
-        image_focus_x: parseFloat(imageFocusXInput.value || '50'),
-        image_focus_y: parseFloat(imageFocusYInput.value || '50'),
-        desc: document.getElementById('desc').value,
+        image_focus_x: parseFloat(imageFocusXInput.value || '0'),
+        image_focus_y: parseFloat(imageFocusYInput.value || '0'),
+        desc: document.getElementById('desc').value.trim(),
         ingr: ingredients,
-        steps: stepsText
+        steps: stepsArray.join('\n')
     }
 
     let btn = document.querySelector('.btn-submit')

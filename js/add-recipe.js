@@ -13,13 +13,14 @@ let stepsList = document.getElementById('steps-list')
 
 let cropState = {
     scale: 1,
-    focusX: 50,
-    focusY: 50,
+    imgX: 0,
+    imgY: 0,
     dragging: false,
     startMouseX: 0,
     startMouseY: 0,
-    startFocusX: 50,
-    startFocusY: 50
+    startImgX: 0,
+    startImgY: 0,
+    loaded: false
 }
 
 startAddPage()
@@ -50,48 +51,128 @@ async function startAddPage() {
 
 function initCropper() {
     previewBox.addEventListener('mousedown', function (e) {
-        if (!cropImage.src) return
+        if (!cropState.loaded) return
+        e.preventDefault()
         cropState.dragging = true
         cropState.startMouseX = e.clientX
         cropState.startMouseY = e.clientY
-        cropState.startFocusX = cropState.focusX
-        cropState.startFocusY = cropState.focusY
+        cropState.startImgX = cropState.imgX
+        cropState.startImgY = cropState.imgY
+        previewBox.style.cursor = 'grabbing'
     })
 
     window.addEventListener('mousemove', function (e) {
         if (!cropState.dragging) return
-
-        let frame = document.querySelector('.crop-frame-border')
-        if (!frame) return
-
-        let rect = frame.getBoundingClientRect()
-        let dx = e.clientX - cropState.startMouseX
-        let dy = e.clientY - cropState.startMouseY
-
-        cropState.focusX = cropState.startFocusX + (dx / rect.width) * 100
-        cropState.focusY = cropState.startFocusY + (dy / rect.height) * 100
-
-        clampCropState()
-        applyCropTransform()
+        cropState.imgX = cropState.startImgX + (e.clientX - cropState.startMouseX)
+        cropState.imgY = cropState.startImgY + (e.clientY - cropState.startMouseY)
+        clampPosition()
+        drawImage()
     })
 
     window.addEventListener('mouseup', function () {
-        cropState.dragging = false
+        if (cropState.dragging) {
+            cropState.dragging = false
+            previewBox.style.cursor = 'grab'
+        }
     })
 
     previewBox.addEventListener('wheel', function (e) {
-        if (!cropImage.src) return
+        if (!cropState.loaded) return
         e.preventDefault()
+        e.stopPropagation()
 
-        let delta = e.deltaY > 0 ? -0.1 : 0.1
-        cropState.scale += delta
+        let oldScale = cropState.scale
+        // вверх = больше, вниз = меньше
+        let delta = e.deltaY < 0 ? 0.1 : -0.1
+        let newScale = parseFloat((oldScale + delta).toFixed(2))
+        if (newScale < 1) newScale = 1
+        if (newScale > 10) newScale = 10
 
-        if (cropState.scale < 1) cropState.scale = 1
-        if (cropState.scale > 3) cropState.scale = 3
+        // масштаб от центра блока
+        let boxW = previewBox.offsetWidth
+        let boxH = previewBox.offsetHeight
+        let cx = boxW / 2
+        let cy = boxH / 2
+        let r = newScale / oldScale
 
-        clampCropState()
-        applyCropTransform()
+        cropState.imgX = cx - (cx - cropState.imgX) * r
+        cropState.imgY = cy - (cy - cropState.imgY) * r
+        cropState.scale = newScale
+
+        clampPosition()
+        drawImage()
     }, { passive: false })
+}
+
+function getSize() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let natW = cropImage.naturalWidth
+    let natH = cropImage.naturalHeight
+    // cover: заполнить весь блок
+    let ratio = Math.max(boxW / natW, boxH / natH)
+    return {
+        w: natW * ratio * cropState.scale,
+        h: natH * ratio * cropState.scale
+    }
+}
+
+function clampPosition() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let s = getSize()
+
+    // Картинка всегда должна полностью перекрывать блок
+    // left (imgX) должен быть <= 0 и >= boxW - imgW
+    if (s.w >= boxW) {
+        if (cropState.imgX > 0) cropState.imgX = 0
+        if (cropState.imgX < boxW - s.w) cropState.imgX = boxW - s.w
+    } else {
+        // картинка уже — центрируем (не должно быть при scale>=1)
+        cropState.imgX = (boxW - s.w) / 2
+    }
+
+    if (s.h >= boxH) {
+        if (cropState.imgY > 0) cropState.imgY = 0
+        if (cropState.imgY < boxH - s.h) cropState.imgY = boxH - s.h
+    } else {
+        cropState.imgY = (boxH - s.h) / 2
+    }
+}
+
+function drawImage() {
+    let s = getSize()
+    cropImage.style.left = Math.round(cropState.imgX) + 'px'
+    cropImage.style.top = Math.round(cropState.imgY) + 'px'
+    cropImage.style.width = Math.round(s.w) + 'px'
+    cropImage.style.height = Math.round(s.h) + 'px'
+    saveCropState()
+}
+
+function saveCropState() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let s = getSize()
+
+    // Вычисляем какая точка картинки сейчас в центре блока
+    // Это и будет object-position при отображении
+    let centerOnImgX = (boxW / 2 - cropState.imgX) / s.w * 100
+    let centerOnImgY = (boxH / 2 - cropState.imgY) / s.h * 100
+
+    centerOnImgX = Math.max(0, Math.min(100, centerOnImgX))
+    centerOnImgY = Math.max(0, Math.min(100, centerOnImgY))
+
+    imageScaleInput.value = cropState.scale.toFixed(4)
+    imageFocusXInput.value = centerOnImgX.toFixed(4)
+    imageFocusYInput.value = centerOnImgY.toFixed(4)
+}
+
+function centerImage() {
+    let boxW = previewBox.offsetWidth
+    let boxH = previewBox.offsetHeight
+    let s = getSize()
+    cropState.imgX = (boxW - s.w) / 2
+    cropState.imgY = (boxH - s.h) / 2
 }
 
 function handleImageUrlChange() {
@@ -102,52 +183,34 @@ function handleImageUrlChange() {
         cropImage.removeAttribute('src')
         previewText.style.display = 'block'
         previewText.innerText = 'Предпросмотр'
-        resetCrop()
+        previewBox.style.cursor = 'default'
+        cropState.loaded = false
+        imageScaleInput.value = '1'
+        imageFocusXInput.value = '0'
+        imageFocusYInput.value = '0'
         return
     }
 
     cropImage.onload = function () {
         cropImage.style.display = 'block'
         previewText.style.display = 'none'
-        resetCrop()
-        applyCropTransform()
+        previewBox.style.cursor = 'grab'
+        cropState.scale = 1
+        cropState.loaded = true
+        centerImage()
+        clampPosition()
+        drawImage()
     }
 
     cropImage.onerror = function () {
         cropImage.style.display = 'none'
         previewText.style.display = 'block'
         previewText.innerText = 'Не удалось загрузить изображение'
-        resetCrop()
+        previewBox.style.cursor = 'default'
+        cropState.loaded = false
     }
 
     cropImage.src = url
-}
-
-function resetCrop() {
-    cropState.scale = 1
-    cropState.focusX = 50
-    cropState.focusY = 50
-    saveCropState()
-}
-
-function clampCropState() {
-    if (cropState.focusX < 0) cropState.focusX = 0
-    if (cropState.focusX > 100) cropState.focusX = 100
-    if (cropState.focusY < 0) cropState.focusY = 0
-    if (cropState.focusY > 100) cropState.focusY = 100
-}
-
-function applyCropTransform() {
-    cropImage.style.transform =
-        'translate(-' + cropState.focusX + '%, -' + cropState.focusY + '%) scale(' + cropState.scale + ')'
-
-    saveCropState()
-}
-
-function saveCropState() {
-    imageScaleInput.value = cropState.scale
-    imageFocusXInput.value = cropState.focusX
-    imageFocusYInput.value = cropState.focusY
 }
 
 function addIngrRow() {
@@ -177,40 +240,34 @@ async function submitForm(e) {
     let ingredients = []
     let ingrRows = ingrList.querySelectorAll('.ingr-name')
     let amountRows = ingrList.querySelectorAll('.ingr-amount')
-
     for (let i = 0; i < ingrRows.length; i++) {
-        if (ingrRows[i].value) {
+        if (ingrRows[i].value.trim()) {
             ingredients.push({
-                name: ingrRows[i].value,
-                amount: amountRows[i].value
+                name: ingrRows[i].value.trim(),
+                amount: amountRows[i].value.trim()
             })
         }
     }
 
     let stepRows = stepsList.querySelectorAll('.step-text')
     let stepsArray = []
-
     for (let i = 0; i < stepRows.length; i++) {
-        if (stepRows[i].value) {
-            stepsArray.push(stepRows[i].value)
-        }
+        if (stepRows[i].value.trim()) stepsArray.push(stepRows[i].value.trim())
     }
 
-    let stepsText = stepsArray.join('\n')
-
     let newRecipe = {
-        title: document.getElementById('title').value,
+        title: document.getElementById('title').value.trim(),
         category: document.getElementById('category').value,
-        subcategory: document.getElementById('subcategory').value,
+        subcategory: document.getElementById('subcategory').value.trim(),
         type: document.getElementById('type').value,
         difficulty: document.getElementById('difficulty').value,
-        image: document.getElementById('image').value,
+        image: document.getElementById('image').value.trim(),
         image_scale: parseFloat(imageScaleInput.value || '1'),
-        image_focus_x: parseFloat(imageFocusXInput.value || '50'),
-        image_focus_y: parseFloat(imageFocusYInput.value || '50'),
-        desc: document.getElementById('desc').value,
+        image_focus_x: parseFloat(imageFocusXInput.value || '0'),
+        image_focus_y: parseFloat(imageFocusYInput.value || '0'),
+        desc: document.getElementById('desc').value.trim(),
         ingr: ingredients,
-        steps: stepsText
+        steps: stepsArray.join('\n')
     }
 
     let btn = document.querySelector('.btn-submit')

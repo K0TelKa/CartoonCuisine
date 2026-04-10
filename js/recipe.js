@@ -28,25 +28,23 @@ function showRecipe(recipe, user, canEdit) {
     let imageHTML = '<div class="no-image">🍲</div>'
 
     if (recipe.image && recipe.image !== '') {
-        let scale = parseFloat(recipe.image_scale || 1)
-        let focusX = parseFloat(recipe.image_focus_x || 50)
-        let focusY = parseFloat(recipe.image_focus_y || 50)
+        let opX = parseFloat(recipe.image_focus_x || 50)
+        let opY = parseFloat(recipe.image_focus_y || 50)
 
-        if (recipe.image.indexOf('<img') === 0) {
-            imageHTML = recipe.image
-        } else if (recipe.image.indexOf('http') === 0) {
+        opX = Math.max(0, Math.min(100, opX))
+        opY = Math.max(0, Math.min(100, opY))
+
+        if (recipe.image.indexOf('http') === 0) {
             imageHTML = `
                 <div class="recipe-image-crop">
-                    <img 
-                        src="${recipe.image}" 
-                        alt=""
+                    <img
+                        src="${recipe.image}"
+                        alt="${escapeHtml(recipe.title || '')}"
                         style="
                             width:100%;
                             height:100%;
                             object-fit:cover;
-                            object-position:${focusX}% ${focusY}%;
-                            transform: scale(${scale});
-                            transform-origin:${focusX}% ${focusY}%;
+                            object-position:${opX.toFixed(1)}% ${opY.toFixed(1)}%;
                         "
                     >
                 </div>
@@ -63,7 +61,7 @@ function showRecipe(recipe, user, canEdit) {
 
     let descHTML = ''
     if (recipe.desc) {
-        descHTML = '<div class="recipe-description"><p>' + recipe.desc + '</p></div>'
+        descHTML = '<div class="recipe-description"><p>' + escapeHtml(recipe.desc) + '</p></div>'
     }
 
     let ingrHTML = ''
@@ -78,7 +76,7 @@ function showRecipe(recipe, user, canEdit) {
 
     let authorHTML = ''
     if (recipe.author_email) {
-        authorHTML = '<p class="recipe-author">Автор: ' + recipe.author_email + '</p>'
+        authorHTML = '<p class="recipe-author">Автор: ' + escapeHtml(recipe.author_email) + '</p>'
     }
 
     let editBtn = ''
@@ -89,10 +87,10 @@ function showRecipe(recipe, user, canEdit) {
     let html = `
     <div class="recipe-header">
         <div class="recipe-tags">
-            <span class="tag">${recipe.subcategory || ''}</span>
+            <span class="tag">${escapeHtml(recipe.subcategory || '')}</span>
             ${diffBadge}
         </div>
-        <h1>${recipe.title || 'Без названия'} ${editBtn}</h1>
+        <h1>${escapeHtml(recipe.title || 'Без названия')} ${editBtn}</h1>
         <p class="recipe-meta">${getTypeText(recipe.type)}</p>
         ${authorHTML}
     </div>
@@ -104,16 +102,29 @@ function showRecipe(recipe, user, canEdit) {
     container.innerHTML = html
 }
 
+function escapeHtml(text) {
+    if (!text) return ''
+    let div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+}
+
 function formatIngredients(ingr) {
+    if (!ingr || !Array.isArray(ingr)) {
+        return '<p>Нет ингредиентов</p>'
+    }
+
     let html = '<ul class="ingredients-list">'
 
     for (let i = 0; i < ingr.length; i++) {
         let item = ingr[i]
 
+        if (!item || !item.name) continue
+
         if (item.amount) {
-            html += '<li><strong>' + item.name + '</strong> — ' + item.amount + '</li>'
+            html += '<li><strong>' + escapeHtml(item.name) + '</strong> — ' + escapeHtml(item.amount) + '</li>'
         } else {
-            html += '<li><strong>' + item.name + '</strong></li>'
+            html += '<li><strong>' + escapeHtml(item.name) + '</strong></li>'
         }
     }
 
@@ -124,43 +135,71 @@ function formatIngredients(ingr) {
 function formatSteps(steps) {
     let stepsArray = []
 
-    if (typeof steps === 'string' && steps.indexOf('[') == 0) {
-        stepsArray = JSON.parse(steps)
+    // Проверяем тип данных
+    if (typeof steps === 'string' && steps.trim().startsWith('[')) {
+        // Пытаемся распарсить JSON
+        try {
+            stepsArray = JSON.parse(steps)
+        } catch (e) {
+            console.warn('Не удалось распарсить JSON, используем split:', e)
+            stepsArray = steps.split('\n')
+        }
     } else if (typeof steps === 'string') {
+        // Обычная строка с переносами
         stepsArray = steps.split('\n')
+    } else if (Array.isArray(steps)) {
+        // Уже массив
+        stepsArray = steps
+    } else {
+        // Неизвестный формат
+        return '<p>Нет инструкций</p>'
     }
 
     let html = '<ol class="steps-list">'
+    let stepCount = 0
 
     for (let i = 0; i < stepsArray.length; i++) {
-        let step = stepsArray[i].trim()
-        if (step != '') {
-            html += '<li>' + step + '</li>'
+        let step = String(stepsArray[i]).trim()
+        
+        if (step !== '') {
+            html += '<li>' + escapeHtml(step) + '</li>'
+            stepCount++
         }
     }
 
     html += '</ol>'
+
+    if (stepCount === 0) {
+        return '<p>Нет инструкций</p>'
+    }
+
     return html
 }
 
 function getTypeText(type) {
-    if (type == 'main') return '🍗 Горячее блюдо'
-    if (type == 'soup') return '🍲 Суп'
-    if (type == 'salad') return '🥗 Салат'
-    if (type == 'pasta') return '🍝 Паста'
-    if (type == 'baking') return '🥐 Выпечка'
-    if (type == 'fastfood') return '🍔 Фастфуд'
-    if (type == 'breakfast') return '🍳 Завтрак'
-    if (type == 'dessert') return '🍰 Десерт'
-    if (type == 'drink') return '🥤 Напиток'
-    if (type == 'snack') return '🥪 Закуска'
-    if (type == 'sauce') return '🍡 Соус'
-    return '🍽️ Блюдо'
+    const types = {
+        'main': '🍗 Горячее блюдо',
+        'soup': '🍲 Суп',
+        'salad': '🥗 Салат',
+        'pasta': '🍝 Паста',
+        'baking': '🥐 Выпечка',
+        'fastfood': '🍔 Фастфуд',
+        'breakfast': '🍳 Завтрак',
+        'dessert': '🍰 Десерт',
+        'drink': '🥤 Напиток',
+        'snack': '🥪 Закуска',
+        'sauce': '🍡 Соус'
+    }
+
+    return types[type] || '🍽️ Блюдо'
 }
 
 function getDiffText(diff) {
-    if (diff == 'easy') return '🟢 Легко'
-    if (diff == 'medium') return '🟡 Средне'
-    if (diff == 'hard') return '🔴 Сложно'
-    return ''
+    const difficulties = {
+        'easy': '🟢 Легко',
+        'medium': '🟡 Средне',
+        'hard': '🔴 Сложно'
+    }
+
+    return difficulties[diff] || ''
 }
